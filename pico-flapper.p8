@@ -101,8 +101,24 @@ function update_obstacles()
 end
 
 
+function point_in_bounding_box(input, box)
+    
+end
+
+
+function collision_detection()
+    for element in all(obstacles) do
+        player_top_left = {}
+        player_top_right = {}
+        player_bottom_left = {}
+        player_bottom_right = {}
+    end
+end
+
+
 function _update()
     if not game_over then
+        update_obstacles()
         accept_player_input()    
         normal_game_tick()
     else
@@ -122,7 +138,7 @@ function _draw()
     if game_over then
         --player game over sequence, then reset with init
         sprite_number_to_draw = player.dead
-        print("game over")
+        print("game over", screen_width / 4, screen_height / 3, 8)
         print("press z to restart")
     elseif player.dy > 0 then
         --player is falling
