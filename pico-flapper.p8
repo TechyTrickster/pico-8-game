@@ -17,6 +17,8 @@ game_over = false
 function make_player()
     player.x = 5
     player.y = screen_height / 2
+    player.width = sprite_width
+    player.height = sprite_height
     player.jump_speed = -3
     player.dy = 0
     player.alive = 1
@@ -102,17 +104,55 @@ end
 
 
 function point_in_bounding_box(input, box)
-    
+    local box_p1_x = box.x
+    local box_p1_y = box.y
+    local box_p2_x = box_p1_x + box.width
+    local box_p2_y = box_p2_y + box.height
+
+    local vertical_check = (input.x >= box_p1_x) and (input.x <= box_p2_x)
+    local horizontal_check = (input.y >= box_p1_y) and (input.y <= box_p2_y)
+    local output = vertical_check and horizontal_check
+    return output
 end
 
 
-function collision_detection()
+function collision_detection(mob)
+    local mob_corner_1 = {}
+    local mob_corner_2 = {}
+    local mob_corner_3 = {}
+    local mob_corner_4 = {}
+
+    mob_corner_1.x = mob.x
+    mob_corner_1.y = mob.y
+    mob_corner_1.width = mob.width
+    mob_corner_1.height = mob.height
+    mob_corner_2.x = mob.x + mob.width
+    mob_corner_2.y = mob.y
+    mob_corner_2.width = mob.width
+    mob_corner_2.height = mob.height
+    mob_corner_3.x = mob.y
+    mob_corner_3.y = mob.y + mob.height
+    mob_corner_3.width = mob.width
+    mob_corner_3.height = mob.height
+    mob_corner_4.x = mob_corner_2.x
+    mob_corner_4.y = mob_corner_3.y
+    mob_corner_4.width = mob.width
+    mob_corner_4.height = mob.height   
+    local collision = false 
+
     for element in all(obstacles) do
-        player_top_left = {}
-        player_top_right = {}
-        player_bottom_left = {}
-        player_bottom_right = {}
+        local c1 = point_in_bounding_box(mob_corner_1, element)
+        local c2 = point_in_bounding_box(mob_corner_2, element)
+        local c3 = point_in_bounding_box(mob_corner_3, element)
+        local c4 = point_in_bounding_box(mob_corner_4, element)
+        collision = c1 or c2 or c3 or c4
+
+        if collision then
+            break
+        end
     end
+
+    return collision
 end
 
 
@@ -121,6 +161,7 @@ function _update()
         update_obstacles()
         accept_player_input()    
         normal_game_tick()
+        collision_detection()
     else
         conditionally_reset_game()
     end
