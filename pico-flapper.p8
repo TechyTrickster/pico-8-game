@@ -216,23 +216,28 @@ end
 
 function _draw()
     cls()
-    sprite_number_to_draw = 0
-    print("current score: " .. tostr(player.score))
-    if game_over then
-        --player game over sequence, then reset with init
-        sprite_number_to_draw = player.dead
-        print("game over", screen_width / 4, screen_height / 3, 8)
-        print("press z to restart")
-    elseif player.dy > 0 then
+    local sprite_number_to_draw = 0
+
+    if player.dy > 0 then
         --player is falling
         sprite_number_to_draw = player.falling
     else
         --player is rising
         sprite_number_to_draw = player.alive
     end
-    
-    foreach(obstacles, draw_pipe) --draw obstacles
+
     spr(sprite_number_to_draw, player.x, player.y)
+    foreach(obstacles, draw_pipe) --draw obstacles
+    print("current score: " .. tostr(player.score))
+
+    if game_over then
+        --player game over sequence, then reset with init
+        sprite_number_to_draw = player.dead
+        print("game over", screen_width / 4, screen_height / 3, 8)
+        print("press z to restart")
+    end
+    
+    
 end
 
 
