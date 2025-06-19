@@ -15,6 +15,7 @@ gravity = 0
 game_over = false
 pipe_spawn_counter_max = 0
 pipe_spawn_counter = 0
+difficulty = 5
 
 
 function make_player()
@@ -190,7 +191,7 @@ function create_new_obstacles()
 
     if pipe_spawn_counter == 0 then
         print("trigger")
-        make_obstacle_column(2)        
+        make_obstacle_column(difficulty)
     end
     
     
