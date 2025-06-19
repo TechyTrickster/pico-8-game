@@ -3,8 +3,7 @@ version 42
 __lua__
 
 player = {}
-obstaclesCurrent = {}
-obstaclesNext = {}
+obstacles = {}
 screen_height = 128
 screen_width = 128
 sprite_height = 16
@@ -29,15 +28,15 @@ end
 
 
 function reset_game()
+    print("resetting")
     make_player()
     game_over = false
 end
 
 
 function _init()
-    make_player()
+    reset_game()
     gravity = 0.3
-    game_over = false
     menuitem(1, "reset game", reset_game())
 end
 
@@ -79,13 +78,25 @@ function normal_game_tick()
     player.y += player.dy
     player.dy += gravity
 
-    game_over = (player.y < 0) or (player.y > screen_height)
+    game_over = (player.y < 0) or (player.y > (screen_height - sprite_height))
 end
 
 
 function conditionally_reset_game()
     if btn(4) then
         reset_game()
+    end
+end
+
+
+
+function update_obstacles()    
+    for element in all(obstacles) do
+        if (element.x > 0) and (element.x < screen_width) then
+        element.x += -1
+        else
+            del(obstacles, element)
+        end
     end
 end
 
@@ -99,9 +110,8 @@ function _update()
     end
 end
 
-
-function draw_obstacles()
-
+function draw_pipe(input)
+    spr(input.sprite, input.x, input.y, false, input.is_top)
 end
 
 
@@ -113,6 +123,7 @@ function _draw()
         --player game over sequence, then reset with init
         sprite_number_to_draw = player.dead
         print("game over")
+        print("press z to restart")
     elseif player.dy > 0 then
         --player is falling
         sprite_number_to_draw = player.falling
@@ -121,7 +132,7 @@ function _draw()
         sprite_number_to_draw = player.alive
     end
 
-    draw_obstacles()
+    foreach(obstacles, draw_pipe) --draw obstacles
     spr(sprite_number_to_draw, player.x, player.y)
 end
 
