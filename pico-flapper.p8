@@ -51,7 +51,7 @@ end
 
 
 function accept_player_input()
-    if btn(5) then
+    if btnp(5) then
         player.dy = player.jump_speed
     end
 end
