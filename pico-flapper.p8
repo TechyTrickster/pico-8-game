@@ -74,27 +74,25 @@ end
 
 
 function make_obstacle_column(x, minGapSize)
-    -- local x = 0
-    -- output.upper_length = sprite_height * rnd(screen_sprite_height)
-    -- output.lower_length = screen_height - sprite_height * rnd(screen_sprite_height - minGapSize - output.upper_length)    
-    -- output.is_off_screen = false
-    -- output.entities = {}
+    local x = screen_width - (sprite_width + 1)
+    local upper_length = sprite_height * rnd(screen_sprite_height)
+    local lower_length = screen_height - sprite_height * rnd(screen_sprite_height - minGapSize - output.upper_length)    
 
-    -- for x = 0, output.height do
-    --     local buffer = {}
-    --     buffer.x = x
-    --     buffer.y = sprite_height * x
-    --     if x-1 == output.height then
-    --         buffer.buffer.sprite_version = 5
-    --     else
-    --         buffer.buffer.sprite_version = 4
-    --     end
+    for index = 0, upper_length do        
+        local y = index * sprite_height
+        local buffer = make_pipe(x, y, true, false)
+        add(obstacles, buffer)
+    end
 
-    --     output.entities[0] = buffer
-    -- end
+    add(obstacles, make_pipe(x, (index + 1) * sprite_height)) --add the pipe cap
 
-    x = screen_width - (sprite_width + 1)
-    y = screen_height - (sprite_height)
+    for index = 0, lower_length do        
+        local y = screen_width - (index * sprite_height)
+        local buffer = make_pipe(x, y, true, false)
+        add(obstacles, buffer)
+    end
+    
+    
  
 
 end
