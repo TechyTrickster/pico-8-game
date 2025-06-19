@@ -7,8 +7,8 @@ player = {}
 obstacles = {}
 screen_height = 128
 screen_width = 128
-sprite_height = 16
-sprite_width = 16
+sprite_height = 8
+sprite_width = 8
 screen_sprite_width = screen_width / sprite_width
 screen_sprite_height = screen_height / sprite_height
 gravity = 0
@@ -37,6 +37,7 @@ function reset_game()
     make_player()
     game_over = false
     pipe_spawn_counter = 0
+    obstacles = {}
 end
 
 
@@ -73,28 +74,32 @@ function make_pipe(x, y, is_top, is_cap)
 end
 
 
-function make_obstacle_column(x, minGapSize)
-    local x = screen_width - (sprite_width + 1)
-    local upper_length = sprite_height * rnd(screen_sprite_height)
-    local lower_length = screen_height - sprite_height * rnd(screen_sprite_height - minGapSize - output.upper_length)    
+function make_obstacle_column(minGapSize)
 
-    for index = 0, upper_length do        
+    local x = screen_width - (sprite_width + 1)
+    local upper_length = flr((rnd(screen_sprite_height) / 2) - (minGapSize / 2))
+    local lower_length = flr((rnd(screen_sprite_height) / 2) - (minGapSize / 2))    
+
+    for index = 0, upper_length do
+        print(tostr(screen_sprite_height) .. " " .. tostr(upper_length) .. " " .. tostr(lower_length) .. " " .. tostr(index)) 
         local y = index * sprite_height
         local buffer = make_pipe(x, y, true, false)
         add(obstacles, buffer)
     end
 
-    add(obstacles, make_pipe(x, (index + 1) * sprite_height)) --add the pipe cap
+    print(#obstacles)
+    local buffer
+    add(obstacles, make_pipe(x, (upper_length + 1) * sprite_height, true, true)) --add the pipe cap
 
-    for index = 0, lower_length do        
+    for index = 0, lower_length do
+        print(tostr(screen_sprite_height) .. " " .. tostr(upper_length) .. " " .. tostr(lower_length) .. " " .. tostr(index)) 
         local y = screen_width - (index * sprite_height)
-        local buffer = make_pipe(x, y, true, false)
+        local buffer = make_pipe(x, y, false, false)
         add(obstacles, buffer)
     end
-    
-    
- 
 
+    print(#obstacles)
+    add(obstacles, make_pipe(x, screen_width - ((lower_length + 1) * sprite_height), false, true)) --add the pipe cap
 end
 
 
@@ -117,10 +122,10 @@ end
 
 function update_obstacles()    
     for element in all(obstacles) do
-        if (element.x > 0) and (element.x < screen_width) then
+        if (element.x > -sprite_width) and (element.x < (screen_width + sprite_width)) then
         element.x += -1
-        else
-            del(obstacles, element)
+        else            
+            del(obstacles, element)            
         end
     end
 end
@@ -130,7 +135,7 @@ function point_in_bounding_box(input, box)
     local box_p1_x = box.x
     local box_p1_y = box.y
     local box_p2_x = box_p1_x + box.width
-    local box_p2_y = box_p2_y + box.height
+    local box_p2_y = box_p1_y + box.height
 
     local vertical_check = (input.x >= box_p1_x) and (input.x <= box_p2_x)
     local horizontal_check = (input.y >= box_p1_y) and (input.y <= box_p2_y)
@@ -163,7 +168,7 @@ function collision_detection(mob)
     mob_corner_4.height = mob.height   
     local collision = false 
 
-    for element in all(obstacles) do
+    for element in all(obstacles) do        
         local c1 = point_in_bounding_box(mob_corner_1, element)
         local c2 = point_in_bounding_box(mob_corner_2, element)
         local c3 = point_in_bounding_box(mob_corner_3, element)
@@ -184,7 +189,8 @@ function create_new_obstacles()
     pipe_spawn_counter = pipe_spawn_counter % pipe_spawn_counter_max
 
     if pipe_spawn_counter == 0 then
-        make_obstacle_column()
+        print("trigger")
+        make_obstacle_column(2)        
     end
     
     
@@ -196,15 +202,15 @@ function _update()
         update_obstacles()
         accept_player_input()    
         normal_game_tick()
-        collision_detection()
+        collision_detection(player)
         create_new_obstacles()
     else
         conditionally_reset_game()
     end
 end
 
-function draw_pipe(input)
-    spr(input.sprite, input.x, input.y, false, input.is_top)
+function draw_pipe(input)    
+    spr(input.sprite, input.x, input.y, 1, 1, false, input.is_top)
 end
 
 
