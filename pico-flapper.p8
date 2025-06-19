@@ -176,18 +176,6 @@ function collision_detection(mob)
         collision = c1 or c2 or c3 or c4
 
         if collision then
-            print(element.x)
-            print(element.y)
-            print(tostr(c1) .. " " .. tostr(c2) .. " " .. tostr(c3) .. " " .. tostr(c4))
-            line(element.x, 0, element.x, screen_height, 11)
-            line(0, element.y, screen_width, element.y, 11)            
-            pset(element.x, element.y, 10)
-
-            line(player.x, 0, player.x, screen_height, 12)
-            line(0, player.y, screen_width, element.y, 12)            
-            pset(player.x, player.y, 13)
-            
-            stop()
             break
         end
     end
