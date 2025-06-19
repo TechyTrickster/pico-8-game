@@ -158,7 +158,7 @@ function collision_detection(mob)
     mob_corner_2.y = mob.y
     mob_corner_2.width = mob.width
     mob_corner_2.height = mob.height
-    mob_corner_3.x = mob.y
+    mob_corner_3.x = mob.x
     mob_corner_3.y = mob.y + mob.height
     mob_corner_3.width = mob.width
     mob_corner_3.height = mob.height
@@ -176,6 +176,18 @@ function collision_detection(mob)
         collision = c1 or c2 or c3 or c4
 
         if collision then
+            print(element.x)
+            print(element.y)
+            print(tostr(c1) .. " " .. tostr(c2) .. " " .. tostr(c3) .. " " .. tostr(c4))
+            line(element.x, 0, element.x, screen_height, 11)
+            line(0, element.y, screen_width, element.y, 11)            
+            pset(element.x, element.y, 10)
+
+            line(player.x, 0, player.x, screen_height, 12)
+            line(0, player.y, screen_width, element.y, 12)            
+            pset(player.x, player.y, 13)
+            
+            stop()
             break
         end
     end
@@ -202,7 +214,7 @@ function _update()
         update_obstacles()
         accept_player_input()    
         normal_game_tick()
-        collision_detection(player)
+        game_over = game_over or collision_detection(player)
         create_new_obstacles()
     else
         conditionally_reset_game()
