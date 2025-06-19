@@ -76,7 +76,7 @@ end
 
 function make_obstacle_column(minGapSize)
 
-    local x = screen_width - (sprite_width + 1)
+    local x = screen_width + (sprite_width + 1)
     local upper_length = flr((rnd(screen_sprite_height) / 2) - (minGapSize / 2))
     local lower_length = flr((rnd(screen_sprite_height) / 2) - (minGapSize / 2))    
 
@@ -122,7 +122,7 @@ end
 
 function update_obstacles()    
     for element in all(obstacles) do
-        if (element.x > -sprite_width) and (element.x < (screen_width + sprite_width)) then
+        if (element.x > -sprite_width) and (element.x < (screen_width + (sprite_width * 2))) then
         element.x += -1
         else            
             del(obstacles, element)            
