@@ -1,0 +1,138 @@
+pico-8 cartridge // http://www.pico-8.com
+version 42
+__lua__
+
+player = {}
+obstaclesCurrent = {}
+obstaclesNext = {}
+screen_height = 128
+screen_width = 128
+sprite_height = 16
+sprite_width = 16
+screen_sprite_width = screen_width / sprite_width
+screen_sprite_height = screen_height / sprite_height
+gravity = 0
+game_over = false
+
+
+function make_player()
+    player.x = 5
+    player.y = screen_height / 2
+    player.jump_speed = -3
+    player.dy = 0
+    player.alive = 1
+    player.falling = 2
+    player.dead = 3
+    player.score = 0
+end
+
+
+
+function reset_game()
+    make_player()
+    game_over = false
+end
+
+
+function _init()
+    make_player()
+    gravity = 0.3
+    game_over = false
+    menuitem(1, "reset game", reset_game())
+end
+
+
+function accept_player_input()
+    if btn(5) then
+        player.dy = player.jump_speed
+    end
+end
+
+
+function make_obstacle_column(x, minGapSize)
+    local output = {}    
+    local x = 0
+    output.upper_length = sprite_height * rnd(screen_sprite_height)
+    output.lower_length = screen_height - sprite_height * rnd(screen_sprite_height - minGapSize - output.upper_length)    
+    output.is_off_screen = false
+    output.entities = {}
+
+    for x = 0, output.height do
+        local buffer = {}
+        buffer.x = x
+        buffer.y = sprite_height * x
+        if x-1 == output.height then
+            buffer.buffer.sprite_version = 5
+        else
+            buffer.buffer.sprite_version = 4
+        end
+
+        output.entities[0] = buffer
+    end
+
+    return output
+end
+
+
+function normal_game_tick()
+    player.score += 1
+    player.y += player.dy
+    player.dy += gravity
+
+    game_over = (player.y < 0) or (player.y > screen_height)
+end
+
+
+function conditionally_reset_game()
+    if btn(4) then
+        reset_game()
+    end
+end
+
+
+function _update()
+    if not game_over then
+        accept_player_input()    
+        normal_game_tick()
+    else
+        conditionally_reset_game()
+    end
+end
+
+
+function draw_obstacles()
+
+end
+
+
+function _draw()
+    cls()
+    sprite_number_to_draw = 0
+    print("current score: " .. tostr(player.score))
+    if game_over then
+        --player game over sequence, then reset with init
+        sprite_number_to_draw = player.dead
+        print("game over")
+    elseif player.dy > 0 then
+        --player is falling
+        sprite_number_to_draw = player.falling
+    else
+        --player is rising
+        sprite_number_to_draw = player.alive
+    end
+
+    draw_obstacles()
+    spr(sprite_number_to_draw, player.x, player.y)
+end
+
+
+
+__gfx__
+0000000000aaaa0000aaaa000088880003b333303b33333300000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000aaaaaa00aaaaaa00888888003b333303b33333300000000000000000000000000000000000000000000000000000000000000000000000000000000
+00700700aa0aa0aaaa0aa0aa8898898803b333300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00077000aaaaaaaaaaaaaaaa8888888803b3333003b3333000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00077000aa0000aaaaa00aaa8889988803b3333003b3333000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00700700aaa00aaaaaa00aaa8898898803b3333003b3333000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000aaaaaa00aaaaaa00888888003b3333003b3333000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000aaaa0000aaaa000088880003b3333003b3333000000000000000000000000000000000000000000000000000000000000000000000000000000000
