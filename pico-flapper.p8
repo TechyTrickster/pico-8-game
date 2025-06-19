@@ -2,6 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 
+
 player = {}
 obstacles = {}
 screen_height = 128
@@ -12,6 +13,8 @@ screen_sprite_width = screen_width / sprite_width
 screen_sprite_height = screen_height / sprite_height
 gravity = 0
 game_over = false
+pipe_spawn_counter_max = 0
+pipe_spawn_counter = 0
 
 
 function make_player()
@@ -33,12 +36,14 @@ function reset_game()
     print("resetting")
     make_player()
     game_over = false
+    pipe_spawn_counter = 0
 end
 
 
 function _init()
     reset_game()
     gravity = 0.3
+    pipe_spawn_counter_max = sprite_width * 1.5    
     menuitem(1, "reset game", reset_game())
 end
 
@@ -50,28 +55,48 @@ function accept_player_input()
 end
 
 
-function make_obstacle_column(x, minGapSize)
-    local output = {}    
-    local x = 0
-    output.upper_length = sprite_height * rnd(screen_sprite_height)
-    output.lower_length = screen_height - sprite_height * rnd(screen_sprite_height - minGapSize - output.upper_length)    
-    output.is_off_screen = false
-    output.entities = {}
+function make_pipe(x, y, is_top, is_cap)
+    local output = {}
+    output.x = x
+    output.y = y
+    output.width = sprite_width
+    output.height = sprite_height
 
-    for x = 0, output.height do
-        local buffer = {}
-        buffer.x = x
-        buffer.y = sprite_height * x
-        if x-1 == output.height then
-            buffer.buffer.sprite_version = 5
-        else
-            buffer.buffer.sprite_version = 4
-        end
-
-        output.entities[0] = buffer
+    if is_cap then
+        output.sprite = 5
+    else
+        output.sprite = 4
     end
 
+    output.is_top = is_top
     return output
+end
+
+
+function make_obstacle_column(x, minGapSize)
+    -- local x = 0
+    -- output.upper_length = sprite_height * rnd(screen_sprite_height)
+    -- output.lower_length = screen_height - sprite_height * rnd(screen_sprite_height - minGapSize - output.upper_length)    
+    -- output.is_off_screen = false
+    -- output.entities = {}
+
+    -- for x = 0, output.height do
+    --     local buffer = {}
+    --     buffer.x = x
+    --     buffer.y = sprite_height * x
+    --     if x-1 == output.height then
+    --         buffer.buffer.sprite_version = 5
+    --     else
+    --         buffer.buffer.sprite_version = 4
+    --     end
+
+    --     output.entities[0] = buffer
+    -- end
+
+    x = screen_width - (sprite_width + 1)
+    y = screen_height - (sprite_height)
+ 
+
 end
 
 
@@ -156,12 +181,25 @@ function collision_detection(mob)
 end
 
 
+function create_new_obstacles()
+    pipe_spawn_counter += 1
+    pipe_spawn_counter = pipe_spawn_counter % pipe_spawn_counter_max
+
+    if pipe_spawn_counter == 0 then
+        make_obstacle_column()
+    end
+    
+    
+end
+
+
 function _update()
     if not game_over then
         update_obstacles()
         accept_player_input()    
         normal_game_tick()
         collision_detection()
+        create_new_obstacles()
     else
         conditionally_reset_game()
     end
@@ -188,7 +226,7 @@ function _draw()
         --player is rising
         sprite_number_to_draw = player.alive
     end
-
+    
     foreach(obstacles, draw_pipe) --draw obstacles
     spr(sprite_number_to_draw, player.x, player.y)
 end
