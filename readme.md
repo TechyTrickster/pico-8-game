@@ -4,7 +4,7 @@ this is a clone of flappy bird that I made with some guidance from "Game Develop
 I tried to pay attention to the token count of my code (an important aspect of pico-8 programs), though, I failed in that respect when it came to the collision code.
 
 ### future features
-1. high score in game
+1. ~~high score in game~~
 2. saved high score
 3. sound effects
 4. music (during gameplay and on game over screen)
