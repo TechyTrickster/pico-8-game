@@ -6,7 +6,7 @@ this is a clone of flappy bird that I made with some guidance from "Game Develop
 
 I tried to pay attention to the token count of my code (an important aspect of pico-8 programs), though, I failed in that respect when it came to the collision code.
 
-![game play gif](pico-flapper_3.gif)
+![game play gif](pico-flapper_5.gif)
 
 ### future features
 1. ~~high score in game~~
