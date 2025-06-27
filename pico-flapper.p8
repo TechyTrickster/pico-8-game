@@ -16,6 +16,7 @@ game_over = false
 pipe_spawn_counter_max = 0
 pipe_spawn_counter = 0
 difficulty = 5
+high_score = 0
 
 
 function make_player()
@@ -35,6 +36,7 @@ end
 
 function reset_game()
     print("resetting")
+    high_score = max(high_score, player.score)
     make_player()
     game_over = false
     pipe_spawn_counter = 0
@@ -230,6 +232,7 @@ function _draw()
     spr(sprite_number_to_draw, player.x, player.y)
     foreach(obstacles, draw_pipe) --draw obstacles
     print("current score: " .. tostr(player.score))
+    print("high score: " .. tostr(high_score))
 
     if game_over then
         --player game over sequence, then reset with init
