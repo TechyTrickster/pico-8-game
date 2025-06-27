@@ -11,7 +11,7 @@ I tried to pay attention to the token count of my code (an important aspect of p
 ### future features
 1. ~~high score in game~~
 2. saved high score
-3. sound effects
+3. ~~sound effects~~
 4. music (during gameplay and on game over screen)
 5. more optimized code
 6. selectable difficulty
